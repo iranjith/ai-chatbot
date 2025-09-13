@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useRef, useState } from 'react';
-import { FaArrowUp } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
+import { FaArrowUp } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
 
 import { Button } from './ui/button';
 
@@ -52,7 +53,7 @@ const Chatbot = () => {
                         : 'bg-gray-100 text-black self-start'
                   }`}
                >
-                  {msg.content}
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
                </p>
             ))}
          </div>
