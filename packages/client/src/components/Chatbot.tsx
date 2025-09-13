@@ -22,6 +22,7 @@ type Message = {
 const Chatbot = () => {
    const [messages, setMessages] = useState<Message[]>([]);
    const [isBotTyping, setIsBotTyping] = useState(false);
+   const [error, setError] = useState('');
    const lastDivRef = useRef<HTMLDivElement | null>(null);
    const conversationId = useRef(crypto.randomUUID());
    const { register, handleSubmit, reset, formState } = useForm<FormData>();
@@ -31,16 +32,26 @@ const Chatbot = () => {
    }, [messages]);
 
    const onSubmit = async ({ prompt }: FormData) => {
-      setMessages((prev) => [...prev, { content: prompt, role: 'user' }]);
-      setIsBotTyping(true);
+      try {
+         setMessages((prev) => [...prev, { content: prompt, role: 'user' }]);
+         setIsBotTyping(true);
+         setError('');
 
-      reset({ prompt: '' });
-      const { data } = await axios.post<ChatResponse>('/api/chat', {
-         prompt,
-         conversationId: conversationId.current,
-      });
-      setMessages((prev) => [...prev, { content: data.message, role: 'bot' }]);
-      setIsBotTyping(false);
+         reset({ prompt: '' });
+         const { data } = await axios.post<ChatResponse>('/api/chat', {
+            prompt,
+            conversationId: conversationId.current,
+         });
+         setMessages((prev) => [
+            ...prev,
+            { content: data.message, role: 'bot' },
+         ]);
+      } catch (error) {
+         console.error(error);
+         setError('An error occurred while processing your request.');
+      } finally {
+         setIsBotTyping(false);
+      }
    };
 
    const onKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -81,6 +92,7 @@ const Chatbot = () => {
                   <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-125"></div>
                </div>
             )}
+            {error && <div className="text-red-500">{error}</div>}
          </div>
          <form
             onSubmit={handleSubmit(onSubmit)}
