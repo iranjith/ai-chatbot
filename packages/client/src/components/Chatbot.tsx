@@ -13,19 +13,24 @@ type ChatResponse = {
    message: string;
 };
 
+type Message = {
+   content: string;
+   role: 'user' | 'bot';
+};
+
 const Chatbot = () => {
-   const [messages, setMessages] = useState<string[]>([]);
+   const [messages, setMessages] = useState<Message[]>([]);
    const conversationId = useRef(crypto.randomUUID());
    const { register, handleSubmit, reset, formState } = useForm<FormData>();
 
    const onSubmit = async ({ prompt }: FormData) => {
-      setMessages((prev) => [...prev, prompt]);
+      setMessages((prev) => [...prev, { content: prompt, role: 'user' }]);
       reset();
       const { data } = await axios.post<ChatResponse>('/api/chat', {
          prompt,
          conversationId: conversationId.current,
       });
-      setMessages((prev) => [...prev, data.message]);
+      setMessages((prev) => [...prev, { content: data.message, role: 'bot' }]);
    };
 
    const onKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -37,9 +42,18 @@ const Chatbot = () => {
 
    return (
       <div>
-         <div>
+         <div className="flex flex-col gap-3 mb-10">
             {messages.map((msg, index) => (
-               <p key={index}>{msg}</p>
+               <p
+                  key={index}
+                  className={`px-3 py-1 rounded-xl ${
+                     msg.role === 'user'
+                        ? 'bg-blue-600 text-white self-end'
+                        : 'bg-gray-100 text-black self-start'
+                  }`}
+               >
+                  {msg.content}
+               </p>
             ))}
          </div>
          <form
