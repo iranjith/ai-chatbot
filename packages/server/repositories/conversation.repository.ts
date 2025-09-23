@@ -1,4 +1,3 @@
-//Implementation detail
 const conversations = new Map<string, string>();
 
 export const conversationRepository = {
