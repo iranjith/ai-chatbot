@@ -16,28 +16,34 @@ datasource db {
 
 model Product {
   id          Int      @id @default(autoincrement())
-  name        String
-  description String?
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
   price       Float
   Review      Review[]
   Summary     Summary?
+
+  @@map("products")
 }
 
 model Review {
   id        Int      @id @default(autoincrement())
-  author    String
-  rating    Int
-  content   String
+  author    String   @db.VarChar(255)
+  rating    Int      @db.TinyInt
+  content   String   @db.Text
   createdAt DateTime @default(now())
   Product   Product? @relation(fields: [productId], references: [id])
   productId Int?
+
+  @@map("reviews")
 }
 
 model Summary {
   id          Int      @id @default(autoincrement())
   productId   Int      @unique
   Product     Product  @relation(fields: [productId], references: [id])
-  content     String
+  content     String   @db.Text
   generatedAt DateTime @default(now())
   expiresAt   DateTime
+
+  @@map("summaries")
 }
