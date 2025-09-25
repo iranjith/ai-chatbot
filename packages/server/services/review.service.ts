@@ -14,7 +14,13 @@ export const reviewService = {
 
       const prompt = template.replace('{{reviews}}', joinedReviews);
 
-      const response = await llmClient.generateText({ prompt, maxTokens: 500 });
-      return response.text.trim();
+      const { text: summary } = await llmClient.generateText({
+         prompt,
+         maxTokens: 500,
+      });
+
+      await reviewRepository.storeReviewSummary(productId, summary);
+
+      return summary;
    },
 };
