@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 export const reviewRepository = {
    async getReviews(productId: number, limit?: number): Promise<Review[]> {
       const reviews = await prisma.review.findMany({
-         where: { productId }, // Filter reviews by productId
-         orderBy: { createdAt: 'desc' }, // Order by creation date descending
-         take: limit, // Limit the number of reviews if a limit is provided
+         where: { productId },
+         orderBy: { createdAt: 'desc' },
+         take: limit,
       });
 
       return reviews;
